@@ -1,79 +1,75 @@
-
 #include <stdio.h>
-#include <stdlib.h>
 
-#define MAX_ITEMS 100
-
-typedef struct {
-    int id;
-    int hv[MAX_ITEMS];
-    int by[MAX_ITEMS];
-    int stock[MAX_ITEMS];
-} UserData;
-
-UserData* users = NULL;
-int user_count = 0;
+int hv[100];
+int by[100];
 int n;
 
 void ob();
-void id(); // 함수 선언 변경
+void printReport();
 
 int main() {
-    char con;
+    ob();
 
-    while (1) {
-        printf("기록(y): ");
-        scanf_s("%c", &con, 1);
-        getchar();
+    printReport();
 
-        if (con == 'Y' || con == 'y') {
-            users = (UserData*)realloc(users, (user_count + 1) * sizeof(UserData));
-
-            ob();
-            id(); // 함수 호출 변경
-            user_count++;
-            continue;
-        }
-        else {
-            break;
-        }
-    }
-
-    free(users);
-    users = NULL;
     return 0;
 }
 
 void ob() {
     printf("상품 개수(종류) 입력\n");
     scanf_s("%d", &n);
-    getchar();
-
-    printf("ID 입력: ");
-    scanf_s("%d", &users[user_count].id);
-    getchar();
 
     printf("상품 별 입고수량 입력\n");
     for (int i = 0; i < n; i++) {
-        scanf_s("%d", &users[user_count].hv[i]);
+        scanf_s("%d", &hv[i]);
     }
-    getchar();
 
     printf("상품 별 판매수량 입력\n");
     for (int i = 0; i < n; i++) {
-        scanf_s("%d", &users[user_count].by[i]);
+        scanf_s("%d", &by[i]);
     }
-    getchar();
 }
 
-void id() { // 함수 정의 변경
-    printf("ID %d의 재고: ", users[user_count].id);
+void printReport() {
+    int stock[100];
+    int totalSold = 0;
+    int totalStock = 0;
+    int maxSold = by[0], maxID = 0;
+    int minSold = by[0], minID = 0;
+
+    printf("재고수량 : ");
     for (int i = 0; i < n; i++) {
-        users[user_count].stock[i] = users[user_count].hv[i] - users[user_count].by[i];
-        if (users[user_count].stock[i] < 0) {
-            users[user_count].stock[i] = 0;
+        stock[i] = hv[i] - by[i];
+        if (stock[i] < 0) 
+            stock[i] = 0;
+        printf("%d", stock[i]);
+        if (i < n - 1) 
+            printf(" ");
+
+        totalSold += by[i];
+        totalStock += hv[i];
+
+        if (by[i] > maxSold) {
+            maxSold = by[i];
+            maxID = i;
         }
-        printf("%d ", users[user_count].stock[i]);
+
+        if (by[i] < minSold) {
+            minSold = by[i];
+            minID = i;
+        }
     }
     printf("\n");
+
+    double sellRate = totalStock > 0 ? (double)totalSold / totalStock * 100 : 0;
+
+    printf("총 판매량 : %d (판매율 %.2f%%)\n", totalSold, sellRate);
+    printf("가장 많이 판매된 상품 : ID %d, 판매량 %d\n", maxID, maxSold);
+    printf("가장 적게 판매된 상품 : ID %d, 판매량 %d\n", minID, minSold);
+
+    for (int i = 0; i < n; i++) {
+        if (hv[i] < by[i]) {
+            printf("상품 ID %d : 재고부족(%d)\n", i, hv[i] - by[i]);
+        }
+    }
 }

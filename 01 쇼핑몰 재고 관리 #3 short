@@ -1,0 +1,159 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ITEMS 5
+#define NAME_LENGTH 30
+
+char item_names[MAX_ITEMS][NAME_LENGTH];
+int item_stocks[MAX_ITEMS];
+int item_total_in[MAX_ITEMS];
+int item_total_out[MAX_ITEMS];
+
+
+void initialize_program() {
+    for (int i = 0; i < MAX_ITEMS; ++i) {
+        strcpy_s(item_names[i], NAME_LENGTH, "(미입력)");
+        item_stocks[i] = item_total_in[i] = item_total_out[i] = 0;
+    }
+    printf("--- 쇼핑몰 재고 관리 프로그램 시작 ---\n");
+    printf("%d개 상품의 데이터가 초기화되었습니다.\n", MAX_ITEMS);
+}
+
+void handle_in(int input_choice, int item_id, int quantity) {
+    if (input_choice == 1) { 
+        for (int i = 0; i < MAX_ITEMS; ++i) {
+            item_stocks[i] += quantity;
+            item_total_in[i] += quantity;
+        }
+        printf("-> 전체 상품에 %d개씩 입고되었습니다.\n", quantity);
+    }
+    else { 
+        int index = item_id - 1;
+        item_stocks[index] += quantity;
+        item_total_in[index] += quantity;
+        printf("-> 상품 ID %d [%s]에 %d개 입고되었습니다. 현재 재고: %d\n",
+            item_id, item_names[index], quantity, item_stocks[index]);
+    }
+}
+
+void handle_out(int item_id, int quantity) {
+    int index = item_id - 1;
+    int sold_qty = (item_stocks[index] >= quantity) ? quantity : item_stocks[index];
+
+    item_stocks[index] -= sold_qty;
+    item_total_out[index] += sold_qty;
+
+    if (sold_qty == quantity) {
+        printf("-> 상품 ID %d [%s]에서 %d개 판매되었습니다. 현재 재고: %d\n",
+            item_id, item_names[index], quantity, item_stocks[index]);
+    }
+    else {
+      
+        printf("! 재고 부족: 상품 ID %d [%s]의 현재 재고는 %d개였습니다. %d개만 판매 처리합니다. (현재 재고: %d)\n",
+            item_id, item_names[index], sold_qty, sold_qty, item_stocks[index]);
+    }
+}
+
+
+void display_status() {
+    int total_stock = 0, total_sales = 0;
+    int max_sales = -1, max_sales_id = -1;
+
+    printf("\n--- 3. 상품현황 ---\n");
+    for (int i = 0; i < MAX_ITEMS; ++i) {
+        total_stock += item_stocks[i];
+        total_sales += item_total_out[i];
+        if (item_total_out[i] > max_sales) {
+            max_sales = item_total_out[i];
+            max_sales_id = i + 1;
+        }
+    }
+    printf("총 재고수량 : %d, 총 판매량 : %d\n", total_stock, total_sales);
+    if (max_sales_id != -1) {
+        printf("가장 많이 판매된 상품 : ID %d [%s], 판매량 %d\n",
+            max_sales_id, item_names[max_sales_id - 1], max_sales);
+    }
+
+    printf("\n--- 개별 상품 재고 현황 ---\n");
+    for (int i = 0; i < MAX_ITEMS; ++i) {
+        printf("ID %d 상품명: [%s], 현재 재고: %d, 총 판매량: %d",
+            i + 1, item_names[i], item_stocks[i], item_total_out[i]);
+        if (item_stocks[i] == 0) printf(" -> 재고부족(0)\n");
+        else if (item_stocks[i] < 5) printf(" -> 재고부족(%d)\n", item_stocks[i]);
+        else printf("\n");
+    }
+    printf("---------------------------\n");
+}
+
+
+void handle_item_name(int item_id, const char* new_name) {
+    strcpy_s(item_names[item_id - 1], NAME_LENGTH, new_name);
+    printf("-> 상품 ID %d의 상품명이 '%s'(으)로 변경되었습니다.\n", item_id, item_names[item_id - 1]);
+}
+
+
+int main() {
+    int choice, item_id, quantity, input_choice;
+    char new_name[NAME_LENGTH];
+#define _CRT_SECURE_NO_WARNINGS
+
+    initialize_program();
+
+    while (1) {
+        printf("\n[쇼핑몰 관리 프로그램]\n");
+        printf("원하는 메뉴를 선택하세요.(1. 입고, 2. 판매, 3. 상품현황, 4. 상품명 입력, 5. 종료) : ");
+        scanf_s("%d", &choice); 
+
+        switch (choice) {
+        case 1: 
+            printf("\n>> 1. 입고 >>\n");
+            printf("입고 방식을 선택하세요.(1. 전체 상품 입고, 2. 개별 상품 입고) : ");
+            scanf_s("%d", &input_choice);
+
+            if (input_choice == 1) {
+                printf("(입력) 전체 상품에 입고할 수량: ");
+                scanf_s("%d", &quantity);
+                handle_in(1, 0, quantity);
+            }
+            else {
+                printf("(입력) 상품 ID (1~%d): ", MAX_ITEMS);
+                scanf_s("%d", &item_id);
+                printf("(입력) 입고 수량: ");
+                scanf_s("%d", &quantity);
+                handle_in(2, item_id, quantity);
+            }
+            break;
+
+        case 2: 
+            printf("\n>> 2. 판매 >>\n");
+            printf("(입력) 판매할 상품 ID (1~%d): ", MAX_ITEMS);
+            scanf_s("%d", &item_id);
+            printf("(입력) 판매 수량: ");
+            scanf_s("%d", &quantity);
+            handle_out(item_id, quantity);
+            break;
+
+        case 3:
+            display_status();
+            break;
+
+        case 4: { 
+            printf("\n--- 4. 상품명 입력 ---\n");
+            printf("상품 ID (1~%d)를 선택하세요: ", MAX_ITEMS);
+            scanf_s("%d", &item_id);
+
+            printf("ID %d의 새로운 상품명을 입력하세요: ", item_id);
+            scanf_s("%s", new_name, (unsigned int)NAME_LENGTH);
+
+            handle_item_name(item_id, new_name);
+            break;
+        }
+        case 5:
+            printf("\n--- 프로그램 종료 ---\n");
+            return 0;
+        default:
+            printf("! 잘못된 메뉴 선택입니다.\n");
+            break;
+        }
+    }
+}

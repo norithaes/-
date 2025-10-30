@@ -10,12 +10,13 @@ void id(int id);
 int main() {
     int ID;
 
-    ob();  
+    ob();
 
     printf("ID 입력: ");
     scanf_s("%d", &ID);
 
-    id(ID); 
+    printf("%d:", ID);
+    id(ID);
 
     return 0;
 }

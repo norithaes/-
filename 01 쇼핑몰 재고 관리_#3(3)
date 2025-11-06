@@ -3,29 +3,26 @@
 #include <stdio.h>
 #include <string.h>
 
-// 매크로를 사용하여 최대 아이템 수와 이름 길이를 정의합니다.
 #define MAX_ITEMS 5
 #define NAME_LENGTH 30
 
-// 전역 변수로 상품 데이터 관리
+
 char item_names[MAX_ITEMS][NAME_LENGTH];
 int item_stocks[MAX_ITEMS];
 int item_total_in[MAX_ITEMS];
 int item_total_out[MAX_ITEMS];
 
-// 함수 프로토타입 선언
 void initialize_program();
-// void set_item_name(); //-- 삭제: 상품명 설정 함수 삭제
+
 void handle_in(int input_choice, int item_id, int quantity);
 void handle_out(int item_id, int quantity);
 void display_status();
 void display_individual_status(int item_id);
 void clear_input_buffer();
 
-// 프로그램 시작 시 데이터를 초기화하는 함수
 void initialize_program() {
     for (int i = 0; i < MAX_ITEMS; ++i) {
-        //-- 수정: 상품명을 미리 지정해둡니다.
+       
         sprintf(item_names[i], "상품 %d", i + 1);
         item_stocks[i] = item_total_in[i] = item_total_out[i] = 0;
     }
@@ -33,23 +30,20 @@ void initialize_program() {
     printf("%d개 상품의 데이터가 초기화되었습니다.\n", MAX_ITEMS);
 }
 
-//-- 삭제: set_item_name() 함수 전체 삭제
-
-// 입고 처리를 담당하는 함수
 void handle_in(int input_choice, int item_id, int quantity) {
     if (quantity < 0) {
         printf("! 수량은 0 이상이어야 합니다.\n");
         return;
     }
 
-    if (input_choice == 1) { // 전체 상품 입고
+    if (input_choice == 1) {
         for (int i = 0; i < MAX_ITEMS; ++i) {
             item_stocks[i] += quantity;
             item_total_in[i] += quantity;
         }
         printf("-> 전체 상품에 %d개씩 입고되었습니다.\n", quantity);
     }
-    else { // 개별 상품 입고
+    else { 
         if (item_id < 1 || item_id > MAX_ITEMS) {
             printf("! 잘못된 상품 ID입니다. (1~%d)\n", MAX_ITEMS);
             return;
@@ -62,7 +56,6 @@ void handle_in(int input_choice, int item_id, int quantity) {
     }
 }
 
-// 판매(출고) 처리를 담당하는 함수
 void handle_out(int item_id, int quantity) {
     if (item_id < 1 || item_id > MAX_ITEMS) {
         printf("! 잘못된 상품 ID입니다. (1~%d)\n", MAX_ITEMS);
@@ -89,9 +82,7 @@ void handle_out(int item_id, int quantity) {
     }
 }
 
-// 전체 상품 현황을 출력하는 함수
 void display_status() {
-    //-- 수정: 변수 추가
     int total_stock = 0, total_sales = 0, grand_total_in = 0;
     int max_sales = -1, max_sales_id = -1;
     double sales_rate = 0.0;
@@ -100,22 +91,20 @@ void display_status() {
     for (int i = 0; i < MAX_ITEMS; ++i) {
         total_stock += item_stocks[i];
         total_sales += item_total_out[i];
-        grand_total_in += item_total_in[i]; //-- 수정: 총 입고량 계산
+        grand_total_in += item_total_in[i]; 
         if (item_total_out[i] > max_sales) {
             max_sales = item_total_out[i];
             max_sales_id = i + 1;
         }
     }
 
-    //-- 수정: 판매율 계산 (0으로 나누는 오류 방지)
     if (grand_total_in > 0) {
         sales_rate = ((double)total_sales / grand_total_in) * 100;
     }
 
-    //-- 수정: 출력 형식 변경
     printf("총 재고수량 : %d\n", total_stock);
     printf("총 판매량 : %d\n", total_sales);
-    printf("총 판매율 : %.2f%%\n", sales_rate); // 판매율 출력
+    printf("총 판매율 : %.2f%%\n", sales_rate); 
 
     if (max_sales > 0) {
         printf("가장 많이 판매된 상품 : ID %d [%s] (판매량 %d개)\n",
@@ -137,7 +126,6 @@ void display_status() {
     printf("---------------------------\n");
 }
 
-// 특정 상품의 상세 현황을 출력하는 함수
 void display_individual_status(int item_id) {
     if (item_id < 1 || item_id > MAX_ITEMS) {
         printf("! 잘못된 상품 ID입니다. (1~%d)\n", MAX_ITEMS);
@@ -157,7 +145,6 @@ void display_individual_status(int item_id) {
     printf("----------------------------------\n");
 }
 
-// 입력 버퍼를 비우는 함수
 void clear_input_buffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
@@ -170,7 +157,7 @@ int main() {
     initialize_program();
 
     while (1) {
-        //-- 수정: 메뉴 변경
+       
         printf("\n[쇼핑몰 관리 프로그램]\n");
         printf("1. 입고 | 2. 판매 | 3. 개별현황 | 4. 전체현황 | 5. 종료\n");
         printf("원하는 메뉴를 선택하세요: ");
@@ -232,7 +219,7 @@ int main() {
             display_status();
             break;
 
-        case 5: //-- 수정: 종료 메뉴
+        case 5: 
             printf("\n--- 프로그램 종료 ---\n");
             return 0;
 

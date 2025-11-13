@@ -5,7 +5,7 @@ int by[100];
 int n;
 
 void ob();
-void printReport();
+void printReport(); 
 
 int main() {
     ob();
@@ -36,18 +36,20 @@ void printReport() {
     int totalStock = 0;
     int maxSold = by[0], maxID = 0;
     int minSold = by[0], minID = 0;
+    int i; 
 
     printf("재고수량 : ");
-    for (int i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         stock[i] = hv[i] - by[i];
-        if (stock[i] < 0) 
+        if (stock[i] < 0)
             stock[i] = 0;
+
         printf("%d", stock[i]);
-        if (i < n - 1) 
-            printf(" ");
+        if (i < n - 1)
+            printf(" "); 
 
         totalSold += by[i];
-        totalStock += hv[i];
+        totalStock += hv[i]; 
 
         if (by[i] > maxSold) {
             maxSold = by[i];
@@ -59,17 +61,18 @@ void printReport() {
             minID = i;
         }
     }
-    printf("\n");
+    printf("\n"); 
 
     double sellRate = totalStock > 0 ? (double)totalSold / totalStock * 100 : 0;
 
     printf("총 판매량 : %d (판매율 %.2f%%)\n", totalSold, sellRate);
-    printf("가장 많이 판매된 상품 : ID %d, 판매량 %d\n", maxID, maxSold);
-    printf("가장 적게 판매된 상품 : ID %d, 판매량 %d\n", minID, minSold);
 
-    for (int i = 0; i < n; i++) {
-        if (hv[i] < by[i]) {
-            printf("상품 ID %d : 재고부족(%d)\n", i, hv[i] - by[i]);
+    printf("가장 많이 판매된 상품 : ID %d, 판매량 %d\n", maxID + 1, maxSold);
+    printf("가장 적게 판매된 상품 : ID %d, 판매량 %d\n", minID + 1, minSold);
+
+    for (i = 0; i < n; i++) {
+        if (stock[i] <= 2) {
+            printf("상품 ID %d : 재고부족(%d)\n", i + 1, stock[i]);
         }
     }
 }

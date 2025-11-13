@@ -5,18 +5,17 @@ int by[100];
 int n;
 
 void ob();
-void id(int id);
+void print_stock_by_id(int target_id);
 
 int main() {
     int ID;
 
-    ob();
+    ob(); 
 
     printf("ID 입력: ");
-    scanf_s("%d", &ID);
+    scanf_s("%d", &ID); 
 
-    printf("%d:", ID);
-    id(ID);
+   print_stock_by_id(ID);
 
     return 0;
 }
@@ -36,16 +35,18 @@ void ob() {
     }
 }
 
-void id(int id) {
+void print_stock_by_id(int target_id) { 
     int stock[100];
+    int i;
 
-    for (int i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         stock[i] = hv[i] - by[i];
         if (stock[i] < 0) stock[i] = 0;
     }
 
+    printf("%d\n", stock[target_id - 1]);
 
-    for (int i = 0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         printf("%d ", stock[i]);
     }
     printf("\n");
